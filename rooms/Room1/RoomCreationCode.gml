@@ -1,0 +1,1 @@
+global.queuedSong = sndMusic1
