@@ -58,8 +58,6 @@ stateFree = function()
 	//diving?
 	if canDive = 1 && sprintkeyheld && jumpkey && xmove != 0
 	{
-		canDive = 0
-		grounded = 0
 	    initxspd = xspd
 		initmDirDive = mDirDive //fallback if our mDirDive is *somehow* not one of the cases
 		switch mDirDive
@@ -94,36 +92,73 @@ stateFree = function()
 	
 	//collision code
 	var vertColInst = instance_place(x, y+yspd, objGround)
-	if vertColInst && vertColInst.layer != layer
+	if vertColInst
 	{
-	 if vertColInst.y-vertColInst.sprite_height/2 > y+sprite_height/2
-	 {
-		layer = vertColInst.layer
-	 }
-	}
-	if vertColInst && vertColInst.layer == layer
-	{
-		while(!place_meeting(x, y+yspd, vertColInst))
+		switch vertColInst.layer
 		{
-			yspd *= 0.5
-			if !place_meeting(x,y+yspd, vertColInst) y += yspd
+			case 1:
+		
+				while abs(yspd) > 0.1
+					{
+						yspd *= 0.5
+						if !vertColInst x += yspd
+					}
+					
+				grounded = 1
+				yspd = 0
+		
+			break;
+		
+			case 2:
+			
+				if vertColInst.y - vertColInst.sprite_height/2 > round(y + sprite_height/2) && !keydown
+				{
+					
+					while abs(yspd) > 0.1
+						{
+							yspd *= 0.5
+							if !vertColInst x += yspd
+						}
+						
+					grounded = 1
+					yspd = 0
+				
+				}
+				
+				else 
+				{grounded = 0}
+			
+			break;
+		
 		}
-		grounded = 1
-		canDive = 1
-		yspd = 0
-	} else {grounded = 0; canDive = 0}
-
+	} else {grounded = 0}
+	
 	var horizColInst = instance_place(x+xspd, y, objGround)
-	if horizColInst && horizColInst.layer == layer
+	if horizColInst
 	{
-		while(!place_meeting(x+xspd, y, horizColInst))
+		switch horizColInst.layer
 		{
-			xspd *= 0.5
-			if !place_meeting(x+xspd,y, horizColInst) x += xspd
+			case 1:
+			
+				while abs(xspd) > 0.1
+					{
+						xspd *= 0.5
+						if !horizColInst x += xspd
+					}
+				xspd = 0
+			break;
+			
+			case 2:
+			
+			break;
 		}
-		xspd = 0
 	}
-
+	
+	if grounded = 1 
+	{canDive = 1}
+	else
+	{canDive = 0}
+	
 	//movement application
 	x += xspd
 	y += yspd
@@ -132,46 +167,75 @@ stateFree = function()
 
 stateDive = function()
 {
+	grounded = 0
+	canDive = 0
     xspd = initxspd
     yspd = lengthdir_y(diveyspd,initmDirDive)
 	diveyspd += grav
 
 	//collision code
 	var vertColInst = instance_place(x, y+yspd, objGround)
-	if vertColInst && vertColInst.layer != layer
+	if vertColInst
 	{
-	 if vertColInst.y-vertColInst.sprite_height/2 > y+sprite_height/2
-	 {
-		layer = vertColInst.layer
-	 }
-	}
-	if vertColInst && vertColInst.layer == layer
-	{
-		while(!place_meeting(x, y+yspd, vertColInst))
+		switch vertColInst.layer
 		{
-			yspd *= 0.5
-			if !place_meeting(x,y+yspd, vertColInst) y+= yspd
+			case 1:
+		
+				while abs(yspd) > 0.1
+					{
+						yspd *= 0.5
+						if !vertColInst x += yspd
+					}
+				grounded = 1
+				yspd = 0
+		
+			break;
+		
+			case 2:
+			
+				if vertColInst.y - vertColInst.sprite_height/2 > round(y + sprite_height/2) && !keydown
+				{
+					
+					while abs(yspd) > 0.1
+						{
+							yspd *= 0.5
+							if !vertColInst x += yspd
+						}
+					grounded = 1
+					yspd = 0
+				
+				}
+			
+			break;
+		
 		}
-	grounded = 1
-	canDive = 1
-	yspd = 0
-	state = stateFree
 	}
-	else
-	{grounded = 0; canDive = 0}
-	y += yspd
-	
 	var horizColInst = instance_place(x+xspd, y, objGround)
-	if horizColInst && horizColInst.layer == layer
+	if horizColInst
 	{
-		while(!place_meeting(x+xspd, y, horizColInst))
+		switch horizColInst.layer
 		{
-			xspd *= 0.5
-			if !place_meeting(x+xspd,y, horizColInst) x += xspd
+			case 1:
+			
+				while abs(xspd) > 0.1
+					{
+						xspd *= 0.5
+						if !horizColInst x += xspd
+					}
+				xspd = 0
+			break;
+			
+			case 2:
+			
+			break;
 		}
-	xspd = 0
 	}
+	
+	if grounded = 1
+	{state = stateFree}
+	
 	x += xspd
+	y += yspd
 }
 
 state = stateFree
