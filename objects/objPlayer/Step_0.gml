@@ -46,11 +46,9 @@ if intKey = 1
 var xmove = keyright - keyleft
 var ymove = keydown - keyup
 
-//sets the direction
 if (xmove != 0 or ymove != 0) //makes the player not face right when you're doing nothing
-{
-mDir = point_direction( 0, 0, xmove, ymove)
-}
+{mDir = point_direction( 0, 0, xmove, ymove)} //sets the direction
+
 //clears our current speed
 var spd = 0
 
@@ -65,6 +63,5 @@ spd = mspd*inputlevel
 xspd = lengthdir_x(spd, mDir)
 yspd = lengthdir_y(spd, mDir)
 
-image_angle = mDir
 x += xspd
 y += yspd
